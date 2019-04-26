@@ -1,0 +1,38 @@
+//赋值运算符函数，如下为类型CMyString的声明，请为该类型添加赋值运算符函数。
+
+#include <iostream>
+using namespace std;
+
+class CMyString
+{
+public:
+	CMyString(char* pData = nullptr);
+	CMyString(const CMyString& str);
+	~CMyString(void);
+
+private:
+	char* m_pData;
+};
+
+//返回类型设为引用，才允许连续赋值
+CMyString& CMyString::operator = (const CMyString &str)  //注意重载运算符  operator =  间有空格
+{
+	if (this == &str)return *this;   //首先判断传入和待赋值实例是不是相同，若不判断，在释放实例内存时会被释放掉
+
+	delete []m_pData;           //释放掉实例自身内存，不然在申请新内存给m_pData时会程序崩溃
+	m_pData = nullptr;
+
+	m_pData = new char[strlen(str.m_pData + 1)];
+	strcpy(m_pData,str.m_pData);
+
+	return *this;
+}
+
+
+
+
+
+int main()
+{
+
+}
