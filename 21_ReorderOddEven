@@ -1,0 +1,164 @@
+//输入一个整数数组。实现一个函数来调整该数组中数字的顺序，使得所有奇数位于数组的前半部分，所有偶数位于数组的后半部分。
+//https://github.com/zhedahht/CodingInterviewChinese2/blob/master/21_ReorderArray/ReorderArray.cpp
+#include <iostream>
+using namespace std;
+
+//初级做法，遍历偶数，挑出，后续前移，该偶数赋给最后一个。但是复杂度O（n^2）
+void ReorderOddEven_1(int *pdata, int length){
+	if (pdata == nullptr || length == 0) return;
+	int temp=0;
+	int count = 0;
+	for (int i = 0; i < length - 1; i++)
+	{
+		if (count == length - 1)return;
+		if (i < 0)
+		{
+			i = 0;
+		}
+		if (pdata[i] % 2 == 0)
+		{
+		    temp = pdata[i];
+			for (int j = i; j < length - 1; j++)
+			{
+				pdata[j] = pdata[j + 1];
+			}
+			pdata[length - 1] = temp;
+			i--;
+		}
+		count++;
+	}
+}
+//维护两个指针，一个从前往后找偶数，一个从后往前找奇数，相遇之前若偶在前，交换两个指针指向的值。
+void ReorderOddEven_2(int *pdata, int length)
+{
+	if (pdata == nullptr || length == 0) return;
+	int *pbegin = pdata;
+	int *pend = pdata + length - 1;
+
+	while (pbegin < pend)     
+	{
+		while (*pbegin % 2 != 0)
+			pbegin++;
+		while (*pend % 2 != 1)
+			pend--;
+		if (pbegin < pend)
+		{
+			int temp = *pbegin;
+			*pbegin = *pend;
+			*pend = temp;
+		}
+	}
+}
+
+
+//可扩展的方法，如负数在前，非负数在后；能被3整除在前，不能被3整除在后。
+//关键在于将判断条件抽象出来，成为一个单独的函数
+
+bool isEven(int n){ return n % 2 == 1; }
+bool isNegtive(int n){ return n < 0; }
+bool is_dev_by3(int n){ return n % 3 == 0; }
+
+void ReorderOddEven_2(int *pdata, int length)
+{
+	if (pdata == nullptr || length == 0) return;
+	int *pbegin = pdata;
+	int *pend = pdata + length - 1;
+
+	while (pbegin < pend)
+	{
+		while (isEven(*pbegin))
+			pbegin++;
+		while (!isEven(*pend))
+			pend--;
+		if (pbegin < pend)
+		{
+			int temp = *pbegin;
+			*pbegin = *pend;
+			*pend = temp;
+		}
+	}
+}
+
+
+// ====================测试代码====================
+void PrintArray(int numbers[], int length)
+{
+	if (length < 0)
+		return;
+
+	for (int i = 0; i < length; ++i)
+		printf("%d\t", numbers[i]);
+
+	printf("\n");
+}
+
+void Test(char* testName, int numbers[], int length)
+{
+	if (testName != nullptr)
+		printf("%s begins:\n", testName);
+
+	int* copy = new int[length];
+	for (int i = 0; i < length; ++i)
+	{
+		copy[i] = numbers[i];
+	}
+
+	printf("Test for solution 1:\n");
+	PrintArray(numbers, length);
+	ReorderOddEven_1(numbers, length);
+	PrintArray(numbers, length);
+
+	printf("Test for solution 2:\n");
+	PrintArray(copy, length);
+	ReorderOddEven_2(copy, length);
+	PrintArray(copy, length);
+
+	delete[] copy;
+}
+
+void Test1()
+{
+	int numbers[] = { 1, 2, 3, 4, 5, 6, 7 };
+	Test("Test1", numbers, sizeof(numbers) / sizeof(int));
+}
+
+void Test2()
+{
+	int numbers[] = { 2, 4, 6, 1, 3, 5, 7 };
+	Test("Test2", numbers, sizeof(numbers) / sizeof(int));
+}
+
+void Test3()
+{
+	int numbers[] = { 1, 3, 5, 7, 2, 4, 6 };
+	Test("Test3", numbers, sizeof(numbers) / sizeof(int));
+}
+
+void Test4()
+{
+	int numbers[] = { 1 };
+	Test("Test4", numbers, sizeof(numbers) / sizeof(int));
+}
+
+void Test5()
+{
+	int numbers[] = { 2 };
+	Test("Test5", numbers, sizeof(numbers) / sizeof(int));
+}
+
+void Test6()
+{
+	Test("Test6", nullptr, 0);
+}
+
+int main(int argc, char* argv[])
+{
+	Test1();
+	Test2();
+	Test3();
+	Test4();
+	Test5();
+	Test6();
+
+	return 0;
+}
